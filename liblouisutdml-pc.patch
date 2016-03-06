@@ -1,0 +1,11 @@
+--- liblouisutdml-2.6.0/liblouisutdml.pc.in.orig	2015-05-05 13:50:46.000000000 +0200
++++ liblouisutdml-2.6.0/liblouisutdml.pc.in	2016-03-06 08:30:06.524419404 +0100
+@@ -2,7 +2,7 @@
+ exec_prefix=@exec_prefix@
+ libdir=@libdir@
+ includedir=@includedir@
+-lbudir=${prefix}/etc/liblouisutdml/lbu_files
++lbudir=@datadir@/liblouisutdml/lbu_files
+ 
+ Name: liblouisutdml
+ Description: a braille XML transcriber with UTDML

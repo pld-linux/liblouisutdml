@@ -1,0 +1,14 @@
+--- liblouisutdml-2.6.0/doc/liblouisutdml.texi.orig	2015-05-07 14:38:45.000000000 +0200
++++ liblouisutdml-2.6.0/doc/liblouisutdml.texi	2016-03-06 08:35:33.497739015 +0100
+@@ -4,9 +4,9 @@
+ @include version.texi
+ @settitle Liblouisutdml User's and Programmer's Manual
+ 
+-@dircategory Misc
++@dircategory Miscellaneous:
+ @direntry
+-* Liblouisutdml: (liblouisutdml). An xml to Braille Translation Library.
++* Liblouisutdml: (liblouisutdml).	An xml to Braille Translation Library
+ @end direntry
+ 
+ @finalout
