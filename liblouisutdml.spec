@@ -19,12 +19,12 @@ URL:		http://liblouis.org/
 %{?with_java:BuildRequires:	ant}
 %{?with_java:BuildRequires:	jdk}
 BuildRequires:	help2man
-BuildRequires:	liblouis-devel >= 2.5.1
+BuildRequires:	liblouis-devel >= 3.0
 BuildRequires:	libxml2-devel >= 2.0
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.714
 BuildRequires:	texinfo
-Requires:	liblouis >= 2.5.1
+Requires:	liblouis >= 3.0
 # C part of Java bindings is contained in liblouisutdml library if built with java enabled
 Provides:	%{name}(java) = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -48,7 +48,7 @@ Summary:	Header files for liblouisutdml library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki liblouisutdml
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	liblouis-devel >= 2.5.1
+Requires:	liblouis-devel >= 3.0
 
 %description devel
 Header files for liblouisutdml library.
