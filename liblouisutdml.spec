@@ -6,7 +6,7 @@ Summary:	Braille XML transcriber with UTDML
 Summary(pl.UTF-8):	Biblioteka tłumacząca XML na alfabet Braille'a przy użyciu UTDML
 Name:		liblouisutdml
 Version:	2.6.0
-Release:	1
+Release:	2
 License:	LGPL v3+ (library), GPL v3+ (tools)
 Group:		Libraries
 #Source0Download: http://liblouis.org/downloads/
@@ -14,6 +14,7 @@ Source0:	https://github.com/liblouis/liblouisutdml/releases/download/v%{version}
 # Source0-md5:	e1928395d7aff424742b39bd923a607e
 Patch0:		%{name}-info.patch
 Patch1:		%{name}-pc.patch
+Patch2:		%{name}-liblouis3.patch
 URL:		http://liblouis.org/
 %{?with_java:BuildRequires:	ant}
 %{?with_java:BuildRequires:	jdk}
@@ -84,6 +85,7 @@ Wiązania Javy do biblioteki liblouisutdml.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %configure \
