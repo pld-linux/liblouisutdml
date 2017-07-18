@@ -6,7 +6,7 @@ Summary:	Braille XML transcriber with UTDML
 Summary(pl.UTF-8):	Biblioteka tłumacząca XML na alfabet Braille'a przy użyciu UTDML
 Name:		liblouisutdml
 Version:	2.6.0
-Release:	3
+Release:	4
 License:	LGPL v3+ (library), GPL v3+ (tools)
 Group:		Libraries
 #Source0Download: http://liblouis.org/downloads/
@@ -19,7 +19,7 @@ URL:		http://liblouis.org/
 %{?with_java:BuildRequires:	ant}
 %{?with_java:BuildRequires:	jdk}
 BuildRequires:	help2man
-BuildRequires:	liblouis-devel >= 3.0
+BuildRequires:	liblouis-devel >= 3.2
 BuildRequires:	libxml2-devel >= 2.0
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.714
@@ -48,7 +48,7 @@ Summary:	Header files for liblouisutdml library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki liblouisutdml
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	liblouis-devel >= 3.0
+Requires:	liblouis-devel >= 3.2
 
 %description devel
 Header files for liblouisutdml library.
