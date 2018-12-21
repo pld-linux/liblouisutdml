@@ -1,35 +1,5 @@
---- liblouisutdml-2.6.0/liblouisutdml/logging.c.orig	2015-05-05 13:50:46.000000000 +0200
-+++ liblouisutdml-2.6.0/liblouisutdml/logging.c	2016-07-30 17:44:06.067115720 +0200
-@@ -60,7 +60,7 @@
-   free(logMsg);
- }
- 
--static void defaultLogCallback(int level, const char *message);
-+static void defaultLogCallback(logLevels level, const char *message);
- 
- static logcallback logCallbackFunction = defaultLogCallback;
- void EXPORT_CALL lbu_registerLogCallback(logcallback callback)
 --- liblouisutdml-2.6.0/liblouisutdml/louisutdml.h.orig	2015-05-07 14:31:31.000000000 +0200
 +++ liblouisutdml-2.6.0/liblouisutdml/louisutdml.h	2017-07-18 19:59:35.241446536 +0200
-@@ -33,7 +33,8 @@
- #define liblouisutdml_h
- #include <libxml/parser.h>
- #include "liblouisutdml.h"
--#include <louis.h>
-+#include <liblouis.h>
-+#include <liblouis/internal.h>
- #include "sem_enum.h"
- 
- typedef enum
-@@ -311,7 +312,7 @@
-   int sync_text_length;
-   int positions_array[2 * BUFSIZE];
-   widechar translated_buffer[2 * BUFSIZE];
--  unsigned char typeform[2 * BUFSIZE];
-+  formtype typeform[2 * BUFSIZE];
-   char string_buffer[2 * BUFSIZE];
- } UserData;
- extern UserData *ud;
 @@ -428,5 +429,5 @@
  
  void logWidecharBuf(logLevels level, const char *msg, const widechar *wbuf, int wlen);
@@ -37,125 +7,227 @@
 -// void logMessage(logLevels level, const char *format, ...);
 +void logMessage(logLevels level, const char *format, ...);
  #endif /*louisutdml_h */
---- liblouisutdml-2.6.0/liblouisutdml/readconfig.c.orig	2017-07-18 20:00:40.258112455 +0200
-+++ liblouisutdml-2.6.0/liblouisutdml/readconfig.c	2017-07-18 20:34:39.891422518 +0200
-@@ -36,7 +36,7 @@
- #include <stdarg.h>
- #include <sys/types.h>
- #include <sys/stat.h>
--#include <louis.h>
-+#include <liblouis.h>
- #include "louisutdml.h"
- #include "sem_names.h"
- #include <ctype.h>
-@@ -241,7 +241,7 @@
-   if (trialPath[0] == 0)
-     {
-       if (lou_getTable (nested->value) != NULL)
--	strcpy (trialPath, getLastTableList ());
-+	strcpy (trialPath, _lou_getLastTableList ());
-     }
-   if (trialPath[0] == 0)
-     {
---- liblouisutdml-2.6.0/liblouisutdml/transcribe_math.c.orig	2015-05-07 14:31:29.000000000 +0200
-+++ liblouisutdml-2.6.0/liblouisutdml/transcribe_math.c	2017-07-18 20:26:29.161428104 +0200
-@@ -138,7 +138,7 @@
- 			 &ud->
- 			 translated_buffer[ud->translated_length],
- 			 &translatedLength,
--			 (char *) ud->typeform, NULL, NULL,
-+			 ud->typeform, NULL, NULL,
- 			 NULL, NULL, dotsIO);
-       ud->in_sync = 0;
-       memset (ud->typeform, 0, sizeof (ud->typeform));
---- liblouisutdml-2.6.0/liblouisutdml/transcribe_paragraph.c.orig	2015-05-07 14:31:32.000000000 +0200
-+++ liblouisutdml-2.6.0/liblouisutdml/transcribe_paragraph.c	2017-07-18 20:28:22.098093482 +0200
-@@ -85,7 +85,7 @@
- static widechar saved_braille_page_string[MAXNUMLEN];
- static widechar saved_running_head[MAXNAMELEN / 2];
- static widechar saved_footer[MAXNAMELEN / 2];
--static unsigned char saved_typeform[2 * BUFSIZE];
-+static formtype saved_typeform[2 * BUFSIZE];
+--- liblouisutdml-2.7.0/liblouisutdml/louisutdml.h.orig	2017-09-20 13:58:06.000000000 +0200
++++ liblouisutdml-2.7.0/liblouisutdml/louisutdml.h	2018-12-21 05:27:44.631849763 +0100
+@@ -117,7 +117,7 @@
+   utf8 = 0,
+   utf16,
+   utf32,
+-  ascii8
++  // ascii8 = EncodingType::ascii8
+ } Encoding;
+ 
+ typedef enum
+--- liblouisutdml-2.7.0/liblouisutdml/readconfig.c.orig	2018-12-21 05:29:37.038515146 +0100
++++ liblouisutdml-2.7.0/liblouisutdml/readconfig.c	2018-12-21 05:29:43.175181743 +0100
+@@ -65,7 +65,7 @@
+   char *value2;
+   int value2Length;
+ }
+-FileInfo;
++ConfFileInfo;
+ 
+ static char pathEnd[2];
+ static double paperWidth;
+@@ -78,7 +78,7 @@
+ static int fatalErrorCount = 0;
  
  static void
- saveState (void)
-@@ -120,7 +120,7 @@
-   widecharcpy (saved_running_head, ud->running_head,
- 	       saved_running_head_length);
-   widecharcpy (saved_footer, ud->footer, saved_footer_length);
--  unsignedcharcpy (saved_typeform, ud->typeform, saved_text_length);
-+  memcpy (saved_typeform, ud->typeform, saved_text_length * sizeof(formtype));
- 
-   widestrcpy (saved_page_separator_number_first,
- 	      ud->page_separator_number_first);
-@@ -167,7 +167,7 @@
-   widecharcpy (ud->running_head, saved_running_head,
- 	       saved_running_head_length);
-   widecharcpy (ud->footer, saved_footer, saved_footer_length);
--  unsignedcharcpy (ud->typeform, saved_typeform, saved_text_length);
-+  memcpy (ud->typeform, saved_typeform, saved_text_length * sizeof(formtype));
- 
-   widestrcpy (ud->page_separator_number_first,
- 	      saved_page_separator_number_first);
---- liblouisutdml-2.6.0/liblouisutdml/transcriber.c.orig	2015-05-07 14:31:32.000000000 +0200
-+++ liblouisutdml-2.6.0/liblouisutdml/transcriber.c	2017-07-18 20:31:05.391424947 +0200
-@@ -670,7 +670,7 @@
- 	{
- 	case code:
- 	  table = ud->compbrl_table_name;
--	  memset (ud->typeform, computer_braille, ud->text_length);
-+	  memset (ud->typeform, computer_braille, ud->text_length * sizeof(formtype));
- 	  break;
- 	default:
- 	  table = ud->main_braille_table;
-@@ -728,10 +728,10 @@
- translate_possibly_prehyphenated (const char *table,
- 				  const widechar * inbuf, int *inlen,
- 				  widechar * outbuf, int *outlen,
--				  char *typeform, int *indices, int mode)
-+				  formtype *typeform, int *indices, int mode)
+-configureError (FileInfo * nested, char *format, ...)
++configureError (ConfFileInfo * nested, char *format, ...)
  {
-   static widechar tmp_outbuf[2 * BUFSIZE];
--  static char tmp_typeform[2 * BUFSIZE];
-+  static formtype tmp_typeform[2 * BUFSIZE];
-   static int tmp_indices_1[2 * BUFSIZE];
-   static int tmp_indices_2[2 * BUFSIZE];
-   int tmp_outlen;
-@@ -816,7 +816,7 @@
- 					&ud->translated_buffer[ud->
- 							       translated_length],
- 					&translatedLength,
--					(char *) &ud->typeform[0],
-+					&ud->typeform[0],
- 					ud->in_sync ? &ud->
- 					positions_array[ud->
- 							translated_length] :
-@@ -1093,8 +1093,8 @@
+   char buffer[1024];
+   va_list arguments;
+@@ -215,7 +215,7 @@
+ }
+ 
+ static char *
+-findTable (FileInfo * nested)
++findTable (ConfFileInfo * nested)
+ {
+   char trialPath[MAXNAMELEN];
+   char filePath[MAXNAMELEN];
+@@ -253,7 +253,7 @@
+ }
+ 
+ static int
+-controlCharValue (FileInfo * nested)
++controlCharValue (ConfFileInfo * nested)
+ {
+ /*Decode centrol characters*/
+   int k = 0;
+@@ -295,13 +295,13 @@
+   return 1;
+ }
+ 
+-static int compileConfig (FileInfo * nested);
++static int compileConfig (ConfFileInfo * nested);
+ 
+ int
+ config_compileSettings (const char *fileName)
+ {
+ /*Compile an input file or string */
+-  FileInfo nested;
++  ConfFileInfo nested;
+   char completePath[MAXNAMELEN];
+   if (!*fileName)
+     return 1;			/*Probably run with defaults */
+@@ -329,7 +329,7 @@
+ }
+ 
+ static int
+-getLine (FileInfo * nested)
++getLine (ConfFileInfo * nested)
+ {
+   int lineLen = 0;
+   int ch;
+@@ -369,7 +369,7 @@
+ }
+ 
+ static int
+-parseLine (FileInfo * nested)
++parseLine (ConfFileInfo * nested)
+ {
+   char *curchar = NULL;
+   int ch = 0;
+@@ -468,7 +468,7 @@
+ }
+ 
+ static int
+-checkActions (FileInfo * nested, const char **actions)
++checkActions (ConfFileInfo * nested, const char **actions)
+ {
+   int actionNum = find_action (actions, nested->action);
+   if (actionNum == -1)
+@@ -477,7 +477,7 @@
+ }
+ 
+ static int
+-checkValues (FileInfo * nested, const char **values)
++checkValues (ConfFileInfo * nested, const char **values)
  {
    int k;
-   int top = ud->top;
--  memset (&ud->typeform[ud->old_text_length], 0, ud->text_length -
--	  ud->old_text_length);
-+  memset (&ud->typeform[ud->old_text_length], 0, (ud->text_length -
-+	  ud->old_text_length) * sizeof(formtype));
-   while (top >= 0 && (ud->stack[top] == italicx || ud->stack[top] == boldx
- 		      || ud->stack[top] == underlinex
- 		      || ud->stack[top] == compbrl))
-@@ -3230,7 +3230,7 @@
- 				ud->text_buffer, &translationLength,
- 				&ud->translated_buffer[0],
- 				&translatedLength,
--				(char *) ud->typeform, NULL, 0))
-+				ud->typeform, NULL, 0))
-     return 0;
-   if (ud->back_text == html)
-     {
-@@ -4948,7 +4948,7 @@
- 		     &ud->
- 		     translated_buffer[ud->translated_length],
- 		     &translatedLength,
--		     (char *) ud->typeform, NULL, NULL,
-+		     ud->typeform, NULL, NULL,
- 		     setIndices, NULL, dotsIO);
-   ud->in_sync = 0;
-   memset (ud->typeform, 0, sizeof (ud->typeform));
+   for (k = 0; values[k]; k += 2)
+@@ -494,7 +494,7 @@
+ }
+ 
+ static unsigned int
+-hexValue (FileInfo * nested, const char *digits)
++hexValue (ConfFileInfo * nested, const char *digits)
+ {
+   int length = strlen (digits);
+   int k;
+@@ -520,7 +520,7 @@
+ }
+ 
+ static unsigned int
+-convertValue (FileInfo * nested, const char *number)
++convertValue (ConfFileInfo * nested, const char *number)
+ {
+   if (number[0] == '0' && number[1] == 'x')
+     return hexValue (nested, &number[2]);
+@@ -534,7 +534,7 @@
+ }
+ 
+ static int
+-orValues (FileInfo * nested, const char **values)
++orValues (ConfFileInfo * nested, const char **values)
+ {
+   int result = 0;
+   int k;
+@@ -564,7 +564,7 @@
+ }
+ 
+ static int
+-checkSubActions (FileInfo * nested, const char **mainActions, const char
++checkSubActions (ConfFileInfo * nested, const char **mainActions, const char
+ 		 **subActions)
+ {
+   int subAction;
+@@ -588,7 +588,7 @@
+ }
+ 
+ static int
+-compileConfig (FileInfo * nested)
++compileConfig (ConfFileInfo * nested)
+ {
+   static const char *mainActions[] = {
+     "outputFormat",
+--- liblouisutdml-2.7.0/liblouisutdml/semantics.c.orig	2017-09-20 13:58:06.000000000 +0200
++++ liblouisutdml-2.7.0/liblouisutdml/semantics.c	2018-12-21 05:30:17.571848019 +0100
+@@ -47,7 +47,7 @@
+   int unedited;
+   char line[5 * MAXNAMELEN];
+ }
+-FileInfo;
++SemFileInfo;
+ 
+ #define HASHSIZE 383
+ #define MAXINSERTS 256
+@@ -91,10 +91,10 @@
+ static int errorCount = 0;
+ static const xmlChar *rootName;
+ static xmlXPathContext *xpathCtx = NULL;
+-static int registerNamespaces (FileInfo * Nested, xmlXPathContextPtr
++static int registerNamespaces (SemFileInfo * Nested, xmlXPathContextPtr
+ 			       xpathCtx, const xmlChar * nsList);
+ static void
+-semanticError (FileInfo * nested, char *format, ...)
++semanticError (SemFileInfo * nested, char *format, ...)
+ {
+   char buffer[MAXNAMELEN];
+   va_list arguments;
+@@ -342,7 +342,7 @@
+ }
+ 
+ static widechar
+-hexValue (FileInfo * nested, const xmlChar * digits, int length)
++hexValue (SemFileInfo * nested, const xmlChar * digits, int length)
+ {
+   int k;
+   unsigned int binaryValue = 0;
+@@ -367,7 +367,7 @@
+ }
+ 
+ static InsertsType *
+-encodeInsertions (FileInfo * nested, xmlChar * insertions, int length)
++encodeInsertions (SemFileInfo * nested, xmlChar * insertions, int length)
+ {
+   int k = 0;
+   int prevk = 0;
+@@ -642,7 +642,7 @@
+   return -1;
+ }
+ static int
+-compileLine (FileInfo * nested)
++compileLine (SemFileInfo * nested)
+ {
+   char *curchar = NULL;
+   int ch = 0;
+@@ -835,7 +835,7 @@
+ }
+ 
+ static int
+-getALine (FileInfo * nested)
++getALine (SemFileInfo * nested)
+ {
+   /*Read a line of chars from an input file */
+   int ch;
+@@ -867,7 +867,7 @@
+ sem_compileFile (const char *fileName)
+ {
+   /*Compile an input file */
+-  FileInfo nested;
++  SemFileInfo nested;
+   char completePath[MAXNAMELEN];
+   int haveAppended = 0;
+   logMessage(LOG_INFO, "Begin sem_compileFile: fileName=%s", fileName);
+@@ -1025,7 +1025,7 @@
+  * Returns 1 on success and 0 on failure.
+  */
+ static int
+-registerNamespaces (FileInfo * nested, xmlXPathContextPtr xpathCtx, const
++registerNamespaces (SemFileInfo * nested, xmlXPathContextPtr xpathCtx, const
+ 		    xmlChar * nsList)
+ {
+   xmlChar *nsListDup;

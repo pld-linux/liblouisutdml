@@ -5,26 +5,29 @@
 Summary:	Braille XML transcriber with UTDML
 Summary(pl.UTF-8):	Biblioteka tłumacząca XML na alfabet Braille'a przy użyciu UTDML
 Name:		liblouisutdml
-Version:	2.6.0
-Release:	4
+Version:	2.7.0
+Release:	1
 License:	LGPL v3+ (library), GPL v3+ (tools)
 Group:		Libraries
 #Source0Download: http://liblouis.org/downloads/
-Source0:	https://github.com/liblouis/liblouisutdml/releases/download/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	e1928395d7aff424742b39bd923a607e
+Source0:	https://github.com/liblouis/liblouisutdml/archive/v%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	acc6d9f41bb8a7c4316dd42d1f3d5f93
 Patch0:		%{name}-info.patch
 Patch1:		%{name}-pc.patch
 Patch2:		%{name}-liblouis3.patch
 URL:		http://liblouis.org/
 %{?with_java:BuildRequires:	ant}
+BuildRequires:	autoconf >= 2.68
+BuildRequires:	automake
 %{?with_java:BuildRequires:	jdk}
 BuildRequires:	help2man
-BuildRequires:	liblouis-devel >= 3.2
+BuildRequires:	liblouis-devel >= 3.8.0
+BuildRequires:	libtool
 BuildRequires:	libxml2-devel >= 2.0
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.714
 BuildRequires:	texinfo
-Requires:	liblouis >= 3.0
+Requires:	liblouis >= 3.8.0
 # C part of Java bindings is contained in liblouisutdml library if built with java enabled
 Provides:	%{name}(java) = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -48,7 +51,7 @@ Summary:	Header files for liblouisutdml library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki liblouisutdml
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	liblouis-devel >= 3.2
+Requires:	liblouis-devel >= 3.8.0
 
 %description devel
 Header files for liblouisutdml library.
@@ -88,6 +91,11 @@ Wiązania Javy do biblioteki liblouisutdml.
 %patch2 -p1
 
 %build
+%{__libtoolize}
+%{__aclocal} -I m4 -I gnulib/m4
+%{__autoconf}
+%{__autoheader}
+%{__automake}
 %configure \
 	%{!?with_java:--disable-java-bindings}
 
@@ -132,7 +140,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHORS ChangeLog NEWS README doc/copyright-notice
 %attr(755,root,root) %{_bindir}/file2brl
 %attr(755,root,root) %{_libdir}/liblouisutdml.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/liblouisutdml.so.7
+%attr(755,root,root) %ghost %{_libdir}/liblouisutdml.so.8
 %{_datadir}/liblouisutdml
 %{_mandir}/man1/file2brl.1*
 
