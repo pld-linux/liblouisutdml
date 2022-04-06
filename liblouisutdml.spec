@@ -5,13 +5,13 @@
 Summary:	Braille XML transcriber with UTDML
 Summary(pl.UTF-8):	Biblioteka tłumacząca XML na alfabet Braille'a przy użyciu UTDML
 Name:		liblouisutdml
-Version:	2.10.0
+Version:	2.11.0
 Release:	1
 License:	LGPL v3+ (library), GPL v3+ (tools)
 Group:		Libraries
 #Source0Download: http://liblouis.org/downloads/
 Source0:	https://github.com/liblouis/liblouisutdml/archive/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	b33d1049db3a9baa370c834b18806e1a
+# Source0-md5:	3250f2baba15150b4f42c4c32cad974f
 Patch0:		%{name}-info.patch
 Patch1:		%{name}-pc.patch
 URL:		http://liblouis.org/
@@ -20,13 +20,13 @@ BuildRequires:	autoconf >= 2.68
 BuildRequires:	automake
 %{?with_java:BuildRequires:	jdk}
 BuildRequires:	help2man
-BuildRequires:	liblouis-devel >= 3.8.0
+BuildRequires:	liblouis-devel >= 3.20.0
 BuildRequires:	libtool >= 2:2
 BuildRequires:	libxml2-devel >= 2.0
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.714
 BuildRequires:	texinfo
-Requires:	liblouis >= 3.8.0
+Requires:	liblouis >= 3.20.0
 # C part of Java bindings is contained in liblouisutdml library if built with java enabled
 Provides:	%{name}(java) = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -50,7 +50,7 @@ Summary:	Header files for liblouisutdml library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki liblouisutdml
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	liblouis-devel >= 3.8.0
+Requires:	liblouis-devel >= 3.20.0
 
 %description devel
 Header files for liblouisutdml library.
