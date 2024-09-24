@@ -1,0 +1,50 @@
+--- liblouisutdml-2.12.0/liblouisutdml/utd2transinxml.c.orig	2023-11-02 10:23:00.000000000 +0100
++++ liblouisutdml-2.12.0/liblouisutdml/utd2transinxml.c	2024-09-24 20:57:29.429584860 +0200
+@@ -31,6 +31,7 @@
+ 
+ #include <stdio.h>
+ #include <string.h>
++#include <stdlib.h>
+ #include "louisutdml.h"
+ 
+ static int findBrlNodes (xmlNode * node);
+--- liblouisutdml-2.12.0/liblouisutdml/utd2dsbible.c.orig	2023-11-02 10:23:00.000000000 +0100
++++ liblouisutdml-2.12.0/liblouisutdml/utd2dsbible.c	2024-09-24 20:58:12.713182590 +0200
+@@ -30,6 +30,7 @@
+    */
+ 
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <string.h>
+ #include "louisutdml.h"
+ 
+--- liblouisutdml-2.12.0/liblouisutdml/utd2brf.c.orig	2023-11-02 10:23:00.000000000 +0100
++++ liblouisutdml-2.12.0/liblouisutdml/utd2brf.c	2024-09-24 20:58:33.739977698 +0200
+@@ -30,6 +30,7 @@
+    */
+ 
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <string.h>
+ #include "louisutdml.h"
+ 
+--- liblouisutdml-2.12.0/liblouisutdml/utd2pef.c.orig	2023-11-02 10:23:00.000000000 +0100
++++ liblouisutdml-2.12.0/liblouisutdml/utd2pef.c	2024-09-24 21:01:25.364359393 +0200
+@@ -30,6 +30,7 @@
+    */
+ 
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <string.h>
+ #include "louisutdml.h"
+ 
+--- liblouisutdml-2.12.0/liblouisutdml/utd2volumes.c.orig	2023-11-02 10:23:00.000000000 +0100
++++ liblouisutdml-2.12.0/liblouisutdml/utd2volumes.c	2024-09-24 21:01:53.734532692 +0200
+@@ -30,6 +30,7 @@
+    */
+ 
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <string.h>
+ #include "louisutdml.h"
+ 

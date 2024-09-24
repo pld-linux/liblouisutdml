@@ -1,0 +1,20 @@
+--- liblouisutdml-2.12.0/liblouisutdml/liblouisutdml.c.orig	2024-09-24 20:55:19.882126857 +0200
++++ liblouisutdml-2.12.0/liblouisutdml/liblouisutdml.c	2024-09-24 20:55:23.418815128 +0200
+@@ -36,6 +36,7 @@
+ #include "louisutdml.h"
+ #include <libxml/HTMLparser.h>
+ #include <libxml/catalog.h>
++#include <libxml/xmlsave.h>
+ 
+ UserData *ud = NULL;
+ 
+--- liblouisutdml-2.12.0/liblouisutdml/transcriber.c.orig	2023-11-02 10:23:00.000000000 +0100
++++ liblouisutdml-2.12.0/liblouisutdml/transcriber.c	2024-09-24 21:07:31.636596757 +0200
+@@ -32,6 +32,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <libxml/xmlsave.h>
+ #include "louisutdml.h"
+ 
+ static xmlNode *firstBrlNode;

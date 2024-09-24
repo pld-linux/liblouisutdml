@@ -14,6 +14,9 @@ Source0:	https://github.com/liblouis/liblouisutdml/archive/v%{version}/%{name}-%
 # Source0-md5:	d97e8f90e2631b4ef4e86178bf96a90c
 Patch0:		%{name}-info.patch
 Patch1:		%{name}-pc.patch
+Patch2:		%{name}-includes.patch
+Patch3:		%{name}-libxml2.patch
+Patch4:		%{name}-types.patch
 URL:		http://liblouis.org/
 %{?with_java:BuildRequires:	ant}
 BuildRequires:	autoconf >= 2.69
@@ -87,6 +90,9 @@ Wiązania Javy do biblioteki liblouisutdml.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 %{__libtoolize}
