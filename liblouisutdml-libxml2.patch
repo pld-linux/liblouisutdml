@@ -10,11 +10,87 @@
  
 --- liblouisutdml-2.12.0/liblouisutdml/transcriber.c.orig	2023-11-02 10:23:00.000000000 +0100
 +++ liblouisutdml-2.12.0/liblouisutdml/transcriber.c	2024-09-24 21:07:31.636596757 +0200
-@@ -32,6 +32,7 @@
+@@ -32,6 +32,8 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <string.h>
 +#include <libxml/xmlsave.h>
++#include <libxml/xmlerror.h>
  #include "louisutdml.h"
  
  static xmlNode *firstBrlNode;
+From 75f672fdfecbeba7f758ba09d3b82083c18f5fa2 Mon Sep 17 00:00:00 2001
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Date: Wed, 20 Aug 2025 09:56:27 +0200
+Subject: [PATCH] libxml_errors: drop ATTRIBUTE_UNUSED
+
+libxml before 2.14 used to define it, but it's not part of its API, so
+we shouldn't have been using it.
+
+Fixes #118
+---
+ liblouisutdml/liblouisutdml.c | 2 +-
+ liblouisutdml/louisutdml.h    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/liblouisutdml/liblouisutdml.c b/liblouisutdml/liblouisutdml.c
+index de7d0e16..2fbd7610 100644
+--- a/liblouisutdml/liblouisutdml.c
++++ b/liblouisutdml/liblouisutdml.c
+@@ -56,7 +56,7 @@ LBUAPI void EXPORT_CALL lbu_loadXMLCatalog(const char *filename)
+   xmlLoadCatalog(filename);
+ }
+ void
+-libxml_errors (void *ctx ATTRIBUTE_UNUSED, const char *msg, ...)
++libxml_errors (void *ctx, const char *msg, ...)
+ {
+   va_list args;
+   char buffer[MAXNAMELEN];
+diff --git a/liblouisutdml/louisutdml.h b/liblouisutdml/louisutdml.h
+index 5c159508..5caf3db3 100644
+--- a/liblouisutdml/louisutdml.h
++++ b/liblouisutdml/louisutdml.h
+@@ -370,7 +370,7 @@ int do_blankline ();
+ int do_softreturn ();
+ int do_righthandpage ();
+ int do_pagenum ();
+-void libxml_errors (void *ctx ATTRIBUTE_UNUSED, const char *msg, ...);
++void libxml_errors (void *ctx, const char *msg, ...);
+ int do_configstring (xmlNode * node);
+ StyleType *new_style (xmlChar * name);
+ StyleType *lookup_style (xmlChar * name);
+diff --git a/liblouisutdml/liblouisutdml.c b/liblouisutdml/liblouisutdml.c
+index 2fbd761..d22d0f9 100644
+--- a/liblouisutdml/liblouisutdml.c
++++ b/liblouisutdml/liblouisutdml.c
+@@ -79,7 +79,7 @@ cleanupLibxml ()
+   if (!libxml2_initialized)
+     return;
+   xmlCleanupParser ();
+-  initGenericErrorDefaultFunc (NULL);
++  xmlSetGenericErrorFunc (NULL, NULL);
+   xmlFreeParserCtxt (ctxt);
+ }
+ 
+diff --git a/liblouisutdml/transcriber.c b/liblouisutdml/transcriber.c
+index 07d7b5a..e39d8f2 100644
+--- a/liblouisutdml/transcriber.c
++++ b/liblouisutdml/transcriber.c
+@@ -4062,7 +4062,7 @@ processDaisyDoc ()
+   transcribe_document (rootElement);
+   xmlFreeDoc (ud->doc);
+   xmlCleanupParser ();
+-  initGenericErrorDefaultFunc (NULL);
++  xmlSetGenericErrorFunc (NULL, NULL);
+   xmlFreeParserCtxt (ctxt);
+   return 1;
+ }
+@@ -4080,7 +4080,7 @@ makeDaisyDoc but not
+     }
+   xmlFreeDoc (ud->doc);
+   xmlCleanupParser ();
+-  initGenericErrorDefaultFunc (NULL);
++  xmlSetGenericErrorFunc (NULL, NULL);
+   xmlFreeParserCtxt (ctxt);
+   return 1;
+ }

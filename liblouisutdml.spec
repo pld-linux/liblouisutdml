@@ -1,12 +1,12 @@
 #
 # Conditional build:
-%bcond_without	java	# Java bindings
+%bcond_with	java	# Java bindings, broken https://github.com/liblouis/liblouisutdml/issues/108
 #
 Summary:	Braille XML transcriber with UTDML
 Summary(pl.UTF-8):	Biblioteka tłumacząca XML na alfabet Braille'a przy użyciu UTDML
 Name:		liblouisutdml
 Version:	2.12.0
-Release:	2
+Release:	3
 License:	LGPL v3+ (library), GPL v3+ (tools)
 Group:		Libraries
 #Source0Download: http://liblouis.org/downloads/
